@@ -102,7 +102,12 @@ if __name__ == "__main__":
         "--results_dir",
         type=str,
         default="charts",
-        help="Poll interval in minutes.",
+        help="Where to store the result csvs.",
+    )
+    parser.add_argument(
+        "--account",
+        type=str,
+        help="Account to look at",
     )
     parser.add_argument(
         "--poll_interval",
@@ -117,17 +122,21 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
+    print("Script started")
+
     while True:
+        print("Scraping...")
         pairs = scrape(
-            "https://revert.finance/#/account/0xE69412E799E52aE70ce9df77f56EA019D2e2c7F4",
+            f"https://revert.finance/#/account/{args.account}",
             headless=not args.debug,
         )
 
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         for pair, data in pairs.items():
             filepath = os.path.join(args.results_dir, f"{pair}.csv")
             ensure_dir_exists(args.results_dir)
-            write_to_csv(
-                filepath, [datetime.now().strftime("%Y-%m-%d %H:%M:%S"), *data.values()]
-            )
+            write_to_csv(filepath, [now, *data.values()])
+
+        print(f"Scraped a new record at {now}")
 
         sleep(args.poll_interval * 60)
