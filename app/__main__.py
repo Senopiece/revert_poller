@@ -59,11 +59,17 @@ def scrape(url, headless=False):
                 ).text_content()
 
             pairs[pair] = {
-                "pooled_assets": float(value("pooled assets").replace("$", "")),
-                "total_PnL": float(value("total PnL").replace("$", "")),
-                "total_APR": float(value("total APR")[:-1]),
-                "fee_APR": float(value("fee APR")[:-1]),
-                "uncollected_fees": float(value("uncollected fees").replace("$", "")),
+                "pooled_assets": float(
+                    value("pooled assets").replace("$", "").replace(",", "")
+                ),
+                "total_PnL": float(
+                    value("total PnL").replace("$", "").replace(",", "")
+                ),
+                "total_APR": float(value("total APR")[:-1].replace(",", "")),
+                "fee_APR": float(value("fee APR")[:-1].replace(",", "")),
+                "uncollected_fees": float(
+                    value("uncollected fees").replace("$", "").replace(",", "")
+                ),
             }
 
         browser.close()
